@@ -1,56 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Matrix Digital Rain</title>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: black;
-        }
-        canvas {
-            display: block;
-        }
-    </style>
-</head>
-<body>
-    <canvas id="canvas"></canvas>
-    <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+import requests
+from bs4 import BeautifulSoup
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+def get_code_from_short_url(short_url):
+    # 发送请求到短链接，获取实际URL
+    response = requests.get(short_url, allow_redirects=True)
+    actual_url = response.url
 
-        const columns = Math.floor(canvas.width / 20);
-        const drops = [];
+    # 获取页面内容
+    page_content = requests.get(actual_url).text
 
-        for (let i = 0; i < columns; i++) {
-            drops[i] = 1;
-        }
+    # 使用BeautifulSoup解析页面
+    soup = BeautifulSoup(page_content, 'html.parser')
 
-        function draw() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+    # 这里需要根据实际页面结构来定位代码
+    # 这只是一个示例，可能需要调整
+    code_element = soup.find('pre')
+    if code_element:
+        return code_element.text
+    else:
+        return "无法找到代码内容"
 
-            ctx.fillStyle = '#0F0';
-            ctx.font = '15px monospace';
-
-            for (let i = 0; i < drops.length; i++) {
-                const text = String.fromCharCode(Math.random() * 128);
-                ctx.fillText(text, i * 20, drops[i] * 20);
-
-                if (drops[i] * 20 > canvas.height && Math.random() > 0.975) {
-                    drops[i] = 0;
-                }
-
-                drops[i]++;
-            }
-        }
-
-        setInterval(draw, 33);
-    </script>
-</body>
-</html>
+# 使用函数
+short_url = "http://8.dw0.cn/115"
+code = get_code_from_short_url(short_url)
+print(code)
